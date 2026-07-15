@@ -1,0 +1,54 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}"/>
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <servlet-filter key="enforce2sv-filter"
+                     name="Enforce 2SV Filter"
+                     class="com.internal.jira.enforce2sv.Enforce2SVFilter"
+                     location="before-dispatch"
+                     weight="100">
+        <description>
+            Перехватывает запросы аутентифицированных пользователей и требует
+            прохождения настройки нативной 2SV перед доступом к функционалу Jira.
+        </description>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </servlet-filter>
+
+    <rest key="enforce2sv-rest" path="/enforce2sv" version="1.0">
+        <description>Runtime-конфигурация плагина Enforce 2SV (без пересборки/рестарта)</description>
+    </rest>
+
+    <servlet key="enforce2sv-info-servlet"
+             name="Enforce 2SV Info Page"
+             class="com.internal.jira.enforce2sv.Enforce2SVInfoServlet">
+        <description>
+            Страница-объяснение для пользователей без настроенной 2SV: почему доступ
+            ограничен и как включить двухэтапную проверку в профиле.
+        </description>
+        <url-pattern>/enforce2sv-info</url-pattern>
+    </servlet>
+
+    <servlet key="enforce2sv-admin-servlet"
+             name="Enforce 2SV Admin Page"
+             class="com.internal.jira.enforce2sv.Enforce2SVAdminServlet">
+        <description>
+            Админ-страница: режимы enabled/dry-run, bypass-группа, allowlist,
+            статистика rollout. Доступ — только SYSTEM_ADMIN.
+        </description>
+        <url-pattern>/enforce2sv-admin</url-pattern>
+    </servlet>
+
+    <web-item key="enforce2sv-admin-link"
+              name="Enforce 2SV Admin Link"
+              section="top_system_section/security_section"
+              weight="25">
+        <label>Enforce 2SV</label>
+        <link linkId="enforce2sv-admin-link">/plugins/servlet/enforce2sv-admin</link>
+    </web-item>
+</atlassian-plugin>
